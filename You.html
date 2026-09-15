@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHAOS 21 — Video Experience</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800;900&display=swap');
+
+:root{
+  --bg:#050505;
+  --text:#fff;
+  --muted:#8b8b8b;
+  --accent:#ff1744;
+  --accent2:#7c4dff;
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Vazirmatn,Arial,sans-serif;
+}
+
+body{
+  cursor:crosshair;
+  user-select:none;
+}
+
+button{
+  font-family:inherit;
+  cursor:pointer;
+}
+
+#world{
+  position:fixed;
+  inset:0;
+  overflow:hidden;
+  perspective:1000px;
+  background:
+    radial-gradient(circle at 20% 30%,#19000b 0,transparent 35%),
+    radial-gradient(circle at 80% 70%,#08001b 0,transparent 40%),
+    #050505;
+}
+
+#world:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.18;
+  background-image:
+    linear-gradient(#fff 1px,transparent 1px),
+    linear-gradient(90deg,#fff 1px,transparent 1px);
+  background-size:80px 80px;
+  mask-image:linear-gradient(to bottom,transparent,black,transparent);
+}
+
+#noise{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:100;
+  opacity:.06;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
+  animation:noise .15s steps(2) infinite;
+}
+
+@keyframes noise{
+  0%{transform:translate(0,0)}
+  25%{transform:translate(3px,-2px)}
+  50%{transform:translate(-2px,3px)}
+  75%{transform:translate(2px,2px)}
+  100%{transform:translate(-3px,-3px)}
+}
+
+#topbar{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:200;
+  padding:22px 28px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  pointer-events:none;
+}
+
+.logo{
+  font-size:clamp(18px,3vw,32px);
+  font-weight:900;
+  letter-spacing:5px;
+  direction:ltr;
+  text-shadow:3px 0 var(--accent),-3px 0 var(--accent2);
+}
+
+.logo span{
+  display:block;
+  font-size:10px;
+  letter-spacing:3px;
+  color:var(--muted);
+  margin-top:5px;
+}
+
+#counter{
+  direction:ltr;
+  font-size:12px;
+  letter-spacing:3px;
+  color:#bbb;
+}
+
+#counter b{
+  color:var(--accent);
+}
+
+#hint{
+  position:fixed;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  z-index:500;
+  text-align:center;
+  pointer-events:none;
+  transition:opacity .8s;
+}
+
+#hint h1{
+  font-size:clamp(30px,7vw,100px);
+  margin:0;
+  font-weight:900;
+  letter-spacing:5px;
+  direction:ltr;
+  animation:flicker 2s infinite;
+}
+
+#hint p{
+  color:#aaa;
+  font-size:12px;
+  letter-spacing:2px;
+}
+
+@keyframes flicker{
+  0%,18%,22%,63%,64%,100%{opacity:1}
+  20%,62%{opacity:.35}
+}
+
+#controls{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  z-index:300;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  padding:18px 25px;
+  background:linear-gradient(transparent,rgba(0,0,0,.8));
+  pointer-events:none;
+}
+
+#controls>*{
+  pointer-events:auto;
+}
+
+.control-group{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.btn{
+  background:#111;
+  color:#fff;
+  border:1px solid #333;
+  padding:10px 14px;
+  border-radius:3px;
+  font-size:11px;
+  transition:.2s;
+}
+
+.btn:hover{
+  border-color:var(--accent);
+  background:#1b0007;
+}
+
+.btn.active{
+  background:var(--accent);
+  border-color:var(--accent);
+}
+
+.range{
+  width:100px;
+  accent-color:var(--accent);
+}
+
+.control-label{
+  font-size:10px;
+  color:#999;
+}
+
+.video{
+  position:absolute;
+  width:clamp(110px,18vw,280px);
+  aspect-ratio:16/9;
+  object-fit:cover;
+  background:#111;
+  border:1px solid rgba(255,255,255,.15);
+  box-shadow:0 0 20px rgba(0,0,0,.8);
+  opacity:.8;
+  transition:opacity .3s,border-color .3s;
+  cursor:pointer;
+  transform-origin:center;
+}
+
+.video:hover{
+  opacity:1;
+  border-color:var(--accent);
+  z-index:50;
+}
+
+.video.selected{
+  position:fixed;
+  width:min(90vw,1100px);
+  height:auto;
+  max-height:80vh;
+  left:50%!important;
+  top:50%!important;
+  transform:translate(-50%,-50%)!important;
+  z-index:1000!important;
+  opacity:1;
+  border:2px solid var(--accent);
+  box-shadow:0 0 100px rgba(255,0,50,.25);
+  object-fit:contain;
+  background:#000;
+}
+
+#close{
+  display:none;
+  position:fixed;
+  top:25px;
+  left:25px;
+  z-index:1100;
+  background:var(--accent);
+  color:white;
+  border:0;
+  padding:12px 18px;
+  font-weight:800;
+  direction:rtl;
+}
+
+#close.show{
+  display:block;
+}
+
+#selectedTitle{
+  display:none;
+  position:fixed;
+  bottom:25px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:1100;
+  color:#fff;
+  font-size:12px;
+  letter-spacing:3px;
+  direction:ltr;
+}
+
+#selectedTitle.show{
+  display:block;
+}
+
+#loading{
+  position:fixed;
+  inset:0;
+  background:#050505;
+  z-index:2000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  transition:opacity 1s;
+}
+
+#loading h2{
+  font-size:clamp(25px,6vw,70px);
+  margin:0;
+  direction:ltr;
+  font-weight:900;
+  letter-spacing:5px;
+}
+
+#loading p{
+  color:#777;
+  font-size:11px;
+  direction:ltr;
+}
+
+.loader{
+  width:180px;
+  height:2px;
+  background:#222;
+  margin-top:25px;
+  overflow:hidden;
+}
+
+.loader div{
+  width:0;
+  height:100%;
+  background:var(--accent);
+  animation:load 3s forwards;
+}
+
+@keyframes load{
+  to{width:100%}
+}
+
+#status{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  z-index:1500;
+  background:rgba(0,0,0,.9);
+  border:1px solid #333;
+  padding:25px;
+  width:min(90vw,450px);
+  text-align:center;
+  display:none;
+}
+
+#status h3{
+  margin-top:0;
+}
+
+#status p{
+  color:#aaa;
+  font-size:12px;
+  line-height:2;
+}
+
+#status button{
+  margin-top:10px;
+}
+
+@media(max-width:600px){
+  #topbar{padding:15px}
+  #controls{padding:12px 15px}
+  .video{width:145px}
+  #hint h1{font-size:38px}
+  .logo{letter-spacing:2px}
+  .range{width:70px}
+}
+</style>
+</head>
+
+<body>
+
+<div id="loading">
+  <h2>CHAOS 21</h2>
+  <p>INITIALIZING VIDEO SYSTEM...</p>
+  <div class="loader"><div></div></div>
+</div>
+
+<div id="world"></div>
+<div id="noise"></div>
+
+<div id="topbar">
+  <div class="logo">
+    CHAOS 21
+    <span>AN EXPERIMENTAL VIDEO EXPERIENCE</span>
+  </div>
+  <div id="counter">ACTIVE / <b id="activeCount">21</b></div>
+</div>
+
+<div id="hint">
+  <h1>CHAOS</h1>
+  <p>CLICK ANY VIDEO TO ENTER</p>
+</div>
+
+<button id="close">✕ بازگشت به آشوب</button>
+<div id="selectedTitle"></div>
+
+<div id="controls">
+  <div class="control-group">
+    <button class="btn" id="pauseBtn">⏸ توقف</button>
+    <button class="btn" id="soundBtn">🔊 صدا</button>
+    <button class="btn" id="shuffleBtn">↻ آشوب جدید</button>
+  </div>
+
+  <div class="control-group">
+    <span class="control-label">INTENSITY</span>
+    <input class="range" id="intensity" type="range" min="0" max="100" value="70">
+    <span class="control-label" id="intensityValue">70%</span>
+  </div>
+</div>
+
+<div id="status">
+  <h3>ویدیوها آماده نیستند</h3>
+  <p>فایل‌های film1.mp4 تا film21.mp4 را کنار index.html قرار بده و صفحه را دوباره باز کن.</p>
+  <button class="btn" onclick="location.reload()">تلاش دوباره</button>
+</div>
+
+<script>
+/* =========================================
+   CHAOS 21 — VIDEO SYSTEM
+   فایل‌ها:
+   film1.mp4 تا film21.mp4
+========================================= */
+
+const TOTAL = 21;
+const world = document.getElementById("world");
+const hint = document.getElementById("hint");
+const closeBtn = document.getElementById("close");
+const selectedTitle = document.getElementById("selectedTitle");
+const loading = document.getElementById("loading");
+const statusBox = document.getElementById("status");
+const activeCount = document.getElementById("activeCount");
+const pauseBtn = document.getElementById("pauseBtn");
+const soundBtn = document.getElementById("soundBtn");
+const shuffleBtn = document.getElementById("shuffleBtn");
+const intensity = document.getElementById("intensity");
+const intensityValue = document.getElementById("intensityValue");
+
+let videos = [];
+let selected = null;
+let chaos = true;
+let muted = false;
+let audioStarted = false;
+let intensityLevel = .7;
+let animationTimer = null;
+let shuffleTimer = null;
+let hasStarted = false;
+
+const positions = [
+  [4,13],[29,8],[57,12],[78,5],[12,39],
+  [39,31],[67,36],[87,31],[1,70],[25,65],
+  [50,67],[73,64],[87,78],[7,86],[34,84],
+  [61,87],[47,3],[92,50],[18,5],[70,22],[36,48]
+];
+
+const rotations = [
+  -7,4,-3,8,-4,5,-8,3,-5,7,-2,6,-9,
+  4,-6,8,-4,5,-7,3,-5
+];
+
+function random(min,max){
+  return Math.random()*(max-min)+min;
+}
+
+function randomInt(min,max){
+  return Math.floor(random(min,max+1));
+}
+
+function createVideos(){
+  for(let i=1;i<=TOTAL;i++){
+    const video=document.createElement("video");
+
+    video.className="video";
+    video.src=`film${i}.mp4`;
+    video.preload="auto";
+    video.playsInline=true;
+    video.loop=false;
+    video.controls=false;
+    video.muted=true;
+
+    video.dataset.index=i;
+    video.dataset.pan=random(-.8,.8);
+
+    video.style.left=positions[i-1][0]+"%";
+    video.style.top=positions[i-1][1]+"%";
+    video.style.transform=`rotate(${rotations[i-1]}deg) scale(${random(.75,1.15)})`;
+
+    video.addEventListener("click",()=>selectVideo(video));
+
+    video.addEventListener("ended",()=>{
+      if(selected===video){
+        closeSelected();
+      }else{
+        restartChaosVideo(video);
+      }
+    });
+
+    video.addEventListener("error",()=>{
+      video.dataset.error="true";
+    });
+
+    world.appendChild(video);
+    videos.push(video);
+  }
+}
+
+function restartChaosVideo(video){
+  if(!chaos || selected) return;
+
+  video.currentTime=0;
+  video.play().catch(()=>{});
+}
+
+function startAudio(){
+  if(audioStarted) return;
+
+  audioStarted=true;
+  muted=false;
+  soundBtn.textContent="🔊 صدا فعال";
+
+  videos.forEach((video,i)=>{
+    video.muted=false;
+    video.volume=random(.08,.22);
+
+    try{
+      video.setAttribute("playsinline","");
+      video.play().catch(()=>{});
+    }catch(e){}
+  });
+}
+
+function startChaos(){
+  chaos=true;
+  selected=null;
+
+  videos.forEach((video,i)=>{
+    video.classList.remove("selected");
+    video.style.display="block";
+    video.muted=false;
+    video.volume=random(.08,.22);
+    video.play().catch(()=>{});
+  });
+
+  hint.style.opacity="0";
+  closeBtn.classList.remove("show");
+  selectedTitle.classList.remove("show");
+
+  startMovement();
+}
+
+function startMovement(){
+  clearInterval(animationTimer);
+
+  animationTimer=setInterval(()=>{
+    if(!chaos || selected) return;
+
+    videos.forEach((video,i)=>{
+      const move=intensityLevel;
+
+      const x=random(-3,3)*move;
+      const y=random(-3,3)*move;
+      const r=rotations[i]+random(-5,5)*move;
+      const s=random(.82,1.16);
+
+      video.style.left=(positions[i][0]+x)+"%";
+      video.style.top=(positions[i][1]+y)+"%";
+      video.style.transform=`rotate(${r}deg) scale(${s})`;
+    });
+  },1400);
+}
+
+function selectVideo(video){
+  if(selected===video){
+    closeSelected();
+    return;
+  }
+
+  if(!audioStarted){
+    startAudio();
+  }
+
+  selected=video;
+  chaos=false;
+
+  clearInterval(animationTimer);
+
+  videos.forEach(v=>{
+    if(v!==video){
+      v.pause();
+      v.muted=true;
+      v.style.opacity=".08";
+      v.style.pointerEvents="none";
+    }
+  });
+
+  video.classList.add("selected");
+  video.style.opacity="1";
+  video.style.pointerEvents="auto";
+  video.muted=false;
+  video.volume=1;
+
+  videos.forEach(v=>{
+    if(v!==video){
+      v.style.display="block";
+    }
+  });
+
+  video.play().catch(()=>{});
+
+  closeBtn.classList.add("show");
+  selectedTitle.textContent="FILM "+video.dataset.index;
+  selectedTitle.classList.add("show");
+}
+
+function closeSelected(){
+  if(!selected) return;
+
+  selected.classList.remove("selected");
+  selected.style.opacity=".8";
+  selected.style.pointerEvents="auto";
+
+  videos.forEach(v=>{
+    v.muted=false;
+    v.style.opacity=".8";
+    v.style.pointerEvents="auto";
+    v.style.display="block";
+  });
+
+  selected=null;
+  chaos=true;
+
+  closeBtn.classList.remove("show");
+  selectedTitle.classList.remove("show");
+
+  startChaos();
+}
+
+function togglePause(){
+  if(selected){
+    if(selected.paused){
+      selected.play().catch(()=>{});
+      pauseBtn.textContent="⏸ توقف";
+    }else{
+      selected.pause();
+      pauseBtn.textContent="▶ پخش";
+    }
+    return;
+  }
+
+  const shouldPause=videos.some(v=>!v.paused);
+
+  if(shouldPause){
+    videos.forEach(v=>v.pause());
+    pauseBtn.textContent="▶ پخش";
+  }else{
+    videos.forEach(v=>v.play().catch(()=>{}));
+    pauseBtn.textContent="⏸ توقف";
+  }
+}
+
+function toggleSound(){
+  if(!audioStarted){
+    startAudio();
+    return;
+  }
+
+  muted=!muted;
+
+  videos.forEach(v=>{
+    v.muted=muted;
+  });
+
+  soundBtn.textContent=muted?"🔇 بی‌صدا":"🔊 صدا فعال";
+}
+
+function shuffle(){
+  if(selected) return;
+
+  videos.forEach((video,i)=>{
+    const x=random(0,88);
+    const y=random(5,85);
+    const r=random(-25,25);
+    const s=random(.65,1.35);
+
+    video.style.left=x+"%";
+    video.style.top=y+"%";
+    video.style.transform=`rotate(${r}deg) scale(${s})`;
+  });
+}
+
+pauseBtn.addEventListener("click",togglePause);
+soundBtn.addEventListener("click",toggleSound);
+shuffleBtn.addEventListener("click",shuffle);
+closeBtn.addEventListener("click",closeSelected);
+
+intensity.addEventListener("input",()=>{
+  intensityLevel=Number(intensity.value)/100;
+  intensityValue.textContent=intensity.value+"%";
+});
+
+document.addEventListener("click",()=>{
+  if(!hasStarted){
+    hasStarted=true;
+    startAudio();
+  }
+},{once:true});
+
+document.addEventListener("keydown",e=>{
+  if(e.code==="Space"){
+    e.preventDefault();
+    togglePause();
+  }
+
+  if(e.code==="Escape" && selected){
+    closeSelected();
+  }
+
+  if(e.key.toLowerCase()==="m"){
+    toggleSound();
+  }
+
+  if(e.key.toLowerCase()==="r"){
+    shuffle();
+  }
+});
+
+function init(){
+  createVideos();
+
+  setTimeout(()=>{
+    loading.style.opacity="0";
+
+    setTimeout(()=>{
+      loading.remove();
+      startChaos();
+    },1000);
+  },3000);
+
+  setTimeout(()=>{
+    const errors=videos.filter(v=>v.dataset.error==="true").length;
+
+    if(errors===TOTAL){
+      statusBox.style.display="block";
+    }
+  },7000);
+}
+
+init();
+</script>
+
+</body>
+</html>
