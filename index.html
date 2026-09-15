@@ -575,6 +575,8 @@ function selectVideo(video){
   video.muted=false;
   video.volume=1;
 
+  // شروع از ثانیه صفر
+  video.currentTime=0;
   video.play().catch(()=>{});
 
   closeBtn.classList.add("show");
