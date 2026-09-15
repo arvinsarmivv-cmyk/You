@@ -192,11 +192,6 @@ button{
   background:#1b0007;
 }
 
-.btn.active{
-  background:var(--accent);
-  border-color:var(--accent);
-}
-
 .range{
   width:100px;
   accent-color:var(--accent);
@@ -392,7 +387,6 @@ button{
 <div id="controls">
   <div class="control-group">
     <button class="btn" id="pauseBtn">⏸ توقف</button>
-    <button class="btn" id="soundBtn">🔊 صدا</button>
     <button class="btn" id="shuffleBtn">↻ آشوب جدید</button>
   </div>
 
@@ -410,22 +404,15 @@ button{
 </div>
 
 <script>
-/* =========================================
-   CHAOS 21 — VIDEO SYSTEM
-   فایل‌ها:
-   film1.mp4 تا film21.mp4
-========================================= */
-
 const TOTAL = 21;
+
 const world = document.getElementById("world");
 const hint = document.getElementById("hint");
 const closeBtn = document.getElementById("close");
 const selectedTitle = document.getElementById("selectedTitle");
 const loading = document.getElementById("loading");
 const statusBox = document.getElementById("status");
-const activeCount = document.getElementById("activeCount");
 const pauseBtn = document.getElementById("pauseBtn");
-const soundBtn = document.getElementById("soundBtn");
 const shuffleBtn = document.getElementById("shuffleBtn");
 const intensity = document.getElementById("intensity");
 const intensityValue = document.getElementById("intensityValue");
@@ -433,11 +420,9 @@ const intensityValue = document.getElementById("intensityValue");
 let videos = [];
 let selected = null;
 let chaos = true;
-let muted = false;
 let audioStarted = false;
 let intensityLevel = .7;
 let animationTimer = null;
-let shuffleTimer = null;
 let hasStarted = false;
 
 const positions = [
@@ -454,10 +439,6 @@ const rotations = [
 
 function random(min,max){
   return Math.random()*(max-min)+min;
-}
-
-function randomInt(min,max){
-  return Math.floor(random(min,max+1));
 }
 
 function createVideos(){
@@ -509,17 +490,11 @@ function startAudio(){
   if(audioStarted) return;
 
   audioStarted=true;
-  muted=false;
-  soundBtn.textContent="🔊 صدا فعال";
 
-  videos.forEach((video,i)=>{
+  videos.forEach(video=>{
     video.muted=false;
     video.volume=random(.08,.22);
-
-    try{
-      video.setAttribute("playsinline","");
-      video.play().catch(()=>{});
-    }catch(e){}
+    video.play().catch(()=>{});
   });
 }
 
@@ -527,7 +502,7 @@ function startChaos(){
   chaos=true;
   selected=null;
 
-  videos.forEach((video,i)=>{
+  videos.forEach(video=>{
     video.classList.remove("selected");
     video.style.display="block";
     video.muted=false;
@@ -548,16 +523,18 @@ function startMovement(){
   animationTimer=setInterval(()=>{
     if(!chaos || selected) return;
 
-    videos.forEach((video,i)=>{
-      const move=intensityLevel;
+    videos.forEach(video=>{
+      const rect=video.getBoundingClientRect();
+      const maxX=Math.max(0,window.innerWidth-rect.width);
+      const maxY=Math.max(70,window.innerHeight-rect.height-70);
 
-      const x=random(-3,3)*move;
-      const y=random(-3,3)*move;
-      const r=rotations[i]+random(-5,5)*move;
-      const s=random(.82,1.16);
+      const x=random(0,maxX);
+      const y=random(70,maxY);
+      const r=random(-25,25);
+      const s=random(.75,1.15);
 
-      video.style.left=(positions[i][0]+x)+"%";
-      video.style.top=(positions[i][1]+y)+"%";
+      video.style.left=x+"px";
+      video.style.top=y+"px";
       video.style.transform=`rotate(${r}deg) scale(${s})`;
     });
   },1400);
@@ -592,12 +569,6 @@ function selectVideo(video){
   video.style.pointerEvents="auto";
   video.muted=false;
   video.volume=1;
-
-  videos.forEach(v=>{
-    if(v!==video){
-      v.style.display="block";
-    }
-  });
 
   video.play().catch(()=>{});
 
@@ -652,40 +623,22 @@ function togglePause(){
   }
 }
 
-function toggleSound(){
-  if(!audioStarted){
-    startAudio();
-    return;
-  }
-
-  muted=!muted;
-
-  videos.forEach(v=>{
-    v.muted=muted;
-  });
-
-  soundBtn.textContent=muted?"🔇 بی‌صدا":"🔊 صدا فعال";
-}
-
 function shuffle(){
   if(selected) return;
 
-  videos.forEach((video,i)=>{
-    const x=random(0,88);
-    const y=random(5,85);
-    const r=random(-25,25);
-    const s=random(.65,1.35);
+  videos.forEach(video=>{
+    const rect=video.getBoundingClientRect();
+    const maxX=Math.max(0,window.innerWidth-rect.width);
+    const maxY=Math.max(70,window.innerHeight-rect.height-70);
 
-    video.style.left=x+"%";
-    video.style.top=y+"%";
-    video.style.transform=`rotate(${r}deg) scale(${s})`;
+    video.style.left=random(0,maxX)+"px";
+    video.style.top=random(70,maxY)+"px";
+    video.style.transform=`rotate(${random(-25,25)}deg) scale(${random(.65,1.35)})`;
   });
 }
 
 pauseBtn.addEventListener("click",togglePause);
-soundBtn.addEventListener("click",toggleSound);
 shuffleBtn.addEventListener("click",shuffle);
-closeBtn.addEventListener("click",closeSelected);
 
 intensity.addEventListener("input",()=>{
   intensityLevel=Number(intensity.value)/100;
@@ -707,10 +660,6 @@ document.addEventListener("keydown",e=>{
 
   if(e.code==="Escape" && selected){
     closeSelected();
-  }
-
-  if(e.key.toLowerCase()==="m"){
-    toggleSound();
   }
 
   if(e.key.toLowerCase()==="r"){
