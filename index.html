@@ -4,15 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>CHAOS 21 — 3D Video Grid</title>
+<title>cheshash</title>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;900&display=swap');
 
 :root{
   --bg:#050507;
-  --panel:rgba(15,15,22,.82);
-  --line:rgba(255,255,255,.13);
+  --panel:rgba(14,14,21,.86);
+  --line:rgba(255,255,255,.14);
   --text:#fff;
   --muted:#92929e;
   --accent:#a78bfa;
@@ -36,18 +36,18 @@ body{
 
 body{
   background:
-    radial-gradient(circle at 50% 40%,rgba(104,75,180,.16),transparent 38%),
+    radial-gradient(circle at 50% 42%,rgba(104,75,180,.18),transparent 38%),
     radial-gradient(circle at 10% 90%,rgba(45,90,150,.12),transparent 35%),
     #050507;
 }
 
-body:before{
+body::before{
   content:"";
   position:fixed;
   inset:0;
-  pointer-events:none;
   z-index:20;
-  opacity:.08;
+  pointer-events:none;
+  opacity:.07;
   background-image:
     linear-gradient(rgba(255,255,255,.5) 1px,transparent 1px),
     linear-gradient(90deg,rgba(255,255,255,.5) 1px,transparent 1px);
@@ -66,15 +66,20 @@ header{
   align-items:center;
   justify-content:space-between;
   padding:0 24px;
-  background:linear-gradient(to bottom,rgba(5,5,7,.95),rgba(5,5,7,.35),transparent);
+  background:linear-gradient(
+    to bottom,
+    rgba(5,5,7,.97),
+    rgba(5,5,7,.45),
+    transparent
+  );
   pointer-events:none;
 }
 
 .brand{
-  pointer-events:auto;
   display:flex;
   align-items:center;
   gap:12px;
+  pointer-events:auto;
 }
 
 .brand-mark{
@@ -90,22 +95,21 @@ header{
 }
 
 .brand h1{
-  font-size:15px;
   margin:0;
-  letter-spacing:3px;
+  font-size:15px;
   font-weight:900;
+  letter-spacing:3px;
 }
 
 .brand span{
   display:block;
   margin-top:2px;
-  font-size:10px;
   color:var(--muted);
+  font-size:10px;
   letter-spacing:2px;
 }
 
 .top-status{
-  pointer-events:auto;
   display:flex;
   align-items:center;
   gap:10px;
@@ -114,8 +118,9 @@ header{
   border-radius:100px;
   background:rgba(12,12,18,.65);
   backdrop-filter:blur(15px);
-  font-size:11px;
   color:#c7c7d0;
+  font-size:11px;
+  pointer-events:auto;
 }
 
 .status-dot{
@@ -153,20 +158,20 @@ header{
     0 18px 45px rgba(0,0,0,.55),
     0 0 0 1px rgba(255,255,255,.025) inset;
   cursor:pointer;
-  opacity:.84;
+  opacity:.86;
   filter:saturate(.82) contrast(1.08);
-  transform-style:preserve-3d;
+  transform-origin:center center;
   transition:
-    left 1.1s cubic-bezier(.2,.8,.2,1),
-    top 1.1s cubic-bezier(.2,.8,.2,1),
-    transform 1.1s cubic-bezier(.2,.8,.2,1),
-    opacity .45s ease,
-    filter .45s ease,
-    box-shadow .45s ease;
+    left 1s cubic-bezier(.2,.8,.2,1),
+    top 1s cubic-bezier(.2,.8,.2,1),
+    transform 1s cubic-bezier(.2,.8,.2,1),
+    opacity .4s ease,
+    filter .4s ease,
+    box-shadow .4s ease;
   will-change:left,top,transform;
 }
 
-.video-card:after{
+.video-card::after{
   content:"";
   position:absolute;
   inset:0;
@@ -183,7 +188,7 @@ header{
   box-shadow:
     0 22px 60px rgba(0,0,0,.7),
     0 0 35px rgba(167,139,250,.18);
-  z-index:50;
+  z-index:500;
 }
 
 .video-card.selected{
@@ -199,13 +204,13 @@ header{
   filter:none;
   transform:translate(-50%,-50%)!important;
   box-shadow:
-    0 0 0 100vmax rgba(0,0,0,.82),
+    0 0 0 100vmax rgba(0,0,0,.84),
     0 35px 100px rgba(0,0,0,.9),
     0 0 80px rgba(167,139,250,.2);
 }
 
 .video-card.paused{
-  opacity:.22;
+  opacity:.18;
   filter:grayscale(1) blur(2px);
 }
 
@@ -240,11 +245,11 @@ header{
   transform:translateX(-50%);
   z-index:1200;
   display:none;
+  padding:9px 17px;
   border:1px solid rgba(255,255,255,.25);
+  border-radius:100px;
   background:rgba(15,15,22,.8);
   color:#fff;
-  border-radius:100px;
-  padding:9px 17px;
   font-family:inherit;
   font-size:11px;
   cursor:pointer;
@@ -281,12 +286,7 @@ header{
   transition:.25s;
 }
 
-.control-btn:hover{
-  background:rgba(167,139,250,.18);
-  border-color:rgba(167,139,250,.5);
-  color:#fff;
-}
-
+.control-btn:hover,
 .control-btn.active{
   background:rgba(167,139,250,.2);
   border-color:rgba(167,139,250,.7);
@@ -352,8 +352,8 @@ input[type="range"]{
   }
 
   .top-status{
-    font-size:9px;
     padding:7px 10px;
+    font-size:9px;
   }
 
   .video-card{
@@ -397,6 +397,7 @@ input[type="range"]{
 <header>
   <div class="brand">
     <div class="brand-mark">21</div>
+
     <div>
       <h1>CHAOS GRID</h1>
       <span>CONTROLLED 3D EXPERIENCE</span>
@@ -421,8 +422,13 @@ input[type="range"]{
 <button id="close">بازگشت به شبکه ×</button>
 
 <div id="controls">
-  <button class="control-btn active" id="chaosBtn">حرکت فعال</button>
-  <button class="control-btn" id="shuffleBtn">چیدمان جدید</button>
+  <button class="control-btn active" id="chaosBtn">
+    حرکت فعال
+  </button>
+
+  <button class="control-btn" id="shuffleBtn">
+    چیدمان جدید
+  </button>
 
   <div class="range-wrap">
     <span>شدت</span>
@@ -448,26 +454,30 @@ const statusText = document.getElementById("statusText");
 const flash = document.getElementById("flash");
 
 let videos = [];
+let slots = [];
 let selectedVideo = null;
 let movementTimer = null;
 let movementEnabled = true;
 let audioStarted = false;
-let slots = [];
 let intensity = .45;
 
 function random(min,max){
   return Math.random() * (max-min) + min;
 }
 
-function shuffleArray(array){
-  const copy = [...array];
+function clamp(value,min,max){
+  return Math.max(min,Math.min(max,value));
+}
 
-  for(let i=copy.length-1;i>0;i--){
+function shuffleArray(array){
+  const result = [...array];
+
+  for(let i=result.length-1;i>0;i--){
     const j = Math.floor(Math.random()*(i+1));
-    [copy[i],copy[j]] = [copy[j],copy[i]];
+    [result[i],result[j]] = [result[j],result[i]];
   }
 
-  return copy;
+  return result;
 }
 
 function createVideos(){
@@ -478,8 +488,8 @@ function createVideos(){
     video.src = `film${i}.mp4`;
     video.dataset.number = i;
     video.preload = "auto";
-    video.loop = false;
     video.playsInline = true;
+    video.loop = false;
     video.muted = true;
 
     video.addEventListener("click",event=>{
@@ -492,6 +502,7 @@ function createVideos(){
         closeSelected();
       }else{
         video.currentTime = 0;
+
         if(!video.paused){
           video.play().catch(()=>{});
         }
@@ -523,10 +534,10 @@ function calculateSlots(){
 
   const rows = Math.ceil(TOTAL / columns);
 
-  const safeTop = width < 600 ? 70 : 82;
-  const safeBottom = width < 600 ? 74 : 88;
-  const safeLeft = width < 600 ? 5 : 18;
-  const safeRight = width < 600 ? 5 : 18;
+  const safeTop = width < 600 ? 75 : 90;
+  const safeBottom = width < 600 ? 82 : 100;
+  const safeLeft = width < 600 ? 8 : 24;
+  const safeRight = width < 600 ? 8 : 24;
 
   const usableWidth = width - safeLeft - safeRight;
   const usableHeight = height - safeTop - safeBottom;
@@ -540,18 +551,15 @@ function calculateSlots(){
     for(let col=0;col<columns;col++){
       if(slots.length >= TOTAL) break;
 
-      const centerX = safeLeft + col * cellWidth + cellWidth/2;
-      const centerY = safeTop + row * cellHeight + cellHeight/2;
-
       slots.push({
-        x:centerX,
-        y:centerY,
         row,
         col,
         columns,
         rows,
         cellWidth,
-        cellHeight
+        cellHeight,
+        x:safeLeft + col * cellWidth + cellWidth / 2,
+        y:safeTop + row * cellHeight + cellHeight / 2
       });
     }
   }
@@ -566,49 +574,63 @@ function getVideoSize(video){
   };
 }
 
-function clamp(value,min,max){
-  return Math.max(min,Math.min(max,value));
-}
-
-function applySlot(video,slot,animate=true){
+function applySlot(video,slot){
   const size = getVideoSize(video);
 
-  const movementPower = intensity * Math.min(slot.cellWidth,slot.cellHeight) * .23;
+  const movementPower =
+    intensity *
+    Math.min(slot.cellWidth,slot.cellHeight) *
+    .16;
 
-  const offsetX = random(-movementPower,movementPower);
-  const offsetY = random(-movementPower,movementPower);
+  let x = slot.x + random(-movementPower,movementPower);
+  let y = slot.y + random(-movementPower,movementPower);
 
-  const x = slot.x + offsetX;
-  const y = slot.y + offsetY;
+  /*
+    این قسمت باعث می‌شود کل ویدیو داخل صفحه بماند،
+    نه فقط مرکز آن.
+  */
 
-  const rotation = random(-3.5,3.5) * (intensity + .25);
-  const depth = random(-90,90) * intensity;
+  const safeLeft = 10;
+  const safeRight = 10;
+  const safeTop = 88;
+  const safeBottom = 95;
 
-  const minX = size.width/2 + 3;
-  const maxX = window.innerWidth - size.width/2 - 3;
+  const minX = safeLeft + size.width / 2;
+  const maxX = window.innerWidth - safeRight - size.width / 2;
 
-  const minY = size.height/2 + 70;
-  const maxY = window.innerHeight - size.height/2 - 65;
+  const minY = safeTop + size.height / 2;
+  const maxY = window.innerHeight - safeBottom - size.height / 2;
 
-  const finalX = clamp(x,minX,maxX);
-  const finalY = clamp(y,minY,maxY);
+  x = clamp(x,minX,maxX);
+  y = clamp(y,minY,maxY);
 
-  video.style.left = `${finalX}px`;
-  video.style.top = `${finalY}px`;
+  const rotation =
+    random(-2.2,2.2) * (intensity + .25);
+
+  const depth =
+    random(-55,55) * intensity;
+
+  video.style.left = `${x}px`;
+  video.style.top = `${y}px`;
+
   video.style.transform =
-    `translate(-50%,-50%) translateZ(${depth}px) rotate(${rotation}deg)`;
+    `translate(-50%,-50%)
+     translateZ(${depth}px)
+     rotate(${rotation}deg)`;
 }
 
 function arrangeBalanced(){
   calculateSlots();
 
-  const order = shuffleArray([...videos]);
+  const order = shuffleArray(videos);
 
   order.forEach((video,index)=>{
-    video.style.position = "absolute";
-    video.style.width = "";
     video.classList.remove("selected");
     video.classList.remove("paused");
+
+    video.style.position = "absolute";
+    video.style.width = "";
+    video.style.height = "";
 
     applySlot(video,slots[index]);
   });
@@ -618,22 +640,23 @@ function moveInsideSlots(){
   if(!movementEnabled || selectedVideo) return;
 
   videos.forEach((video,index)=>{
-    if(video.classList.contains("selected")) return;
     applySlot(video,slots[index]);
   });
 }
 
 function startMovement(){
-  clearInterval(movementTimer);
+  stopMovement();
 
   movementTimer = setInterval(()=>{
     moveInsideSlots();
-  },1400);
+  },1500);
 }
 
 function stopMovement(){
-  clearInterval(movementTimer);
-  movementTimer = null;
+  if(movementTimer){
+    clearInterval(movementTimer);
+    movementTimer = null;
+  }
 }
 
 function startAudio(){
@@ -646,21 +669,14 @@ function startAudio(){
     video.volume = random(.07,.18);
 
     video.play().catch(()=>{
+      /*
+        بعضی مرورگرها تا اولین لمس کاربر اجازه صدا نمی‌دهند.
+      */
       video.muted = true;
     });
   });
 
   statusText.textContent = "21 VIDEO STREAMS ACTIVE";
-}
-
-function stopAllExcept(active){
-  videos.forEach(video=>{
-    if(video !== active){
-      video.pause();
-      video.muted = true;
-      video.classList.add("paused");
-    }
-  });
 }
 
 function selectVideo(video){
@@ -675,19 +691,29 @@ function selectVideo(video){
   movementEnabled = false;
   stopMovement();
 
-  stopAllExcept(video);
-
   videos.forEach(item=>{
     if(item !== video){
+      item.pause();
+      item.muted = true;
       item.classList.add("paused");
+      item.classList.remove("selected");
     }
   });
 
   video.classList.remove("paused");
   video.classList.add("selected");
+
+  /*
+    توقف کامل و ریست زمان قبل از پخش.
+  */
+  video.pause();
+
+  try{
+    video.currentTime = 0;
+  }catch(error){}
+
   video.muted = false;
   video.volume = 1;
-  video.currentTime = 0;
 
   selectedTitle.textContent =
     `FILM ${String(video.dataset.number).padStart(2,"0")}`;
@@ -696,7 +722,23 @@ function selectVideo(video){
   closeBtn.style.display = "block";
   chaosBtn.classList.remove("active");
 
-  video.play().catch(()=>{});
+  /*
+    با requestAnimationFrame مطمئن می‌شویم
+    ویدیو از ابتدای فایل شروع می‌شود.
+  */
+  requestAnimationFrame(()=>{
+    try{
+      video.currentTime = 0;
+    }catch(error){}
+
+    const playPromise = video.play();
+
+    if(playPromise !== undefined){
+      playPromise.catch(()=>{
+        video.muted = false;
+      });
+    }
+  });
 
   flash.style.opacity = ".07";
 
@@ -711,11 +753,16 @@ function closeSelected(){
   const active = selectedVideo;
 
   selectedVideo = null;
+
   centerLabel.style.display = "none";
   closeBtn.style.display = "none";
 
   active.pause();
-  active.currentTime = 0;
+
+  try{
+    active.currentTime = 0;
+  }catch(error){}
+
   active.classList.remove("selected");
 
   videos.forEach(video=>{
@@ -742,10 +789,8 @@ function newArrangement(){
 
   arrangeBalanced();
 
-  if(!movementEnabled){
-    movementEnabled = true;
-    chaosBtn.classList.add("active");
-  }
+  movementEnabled = true;
+  chaosBtn.classList.add("active");
 
   startMovement();
 }
@@ -767,7 +812,7 @@ shuffleBtn.addEventListener("click",()=>{
 });
 
 intensityInput.addEventListener("input",()=>{
-  intensity = Number(intensityInput.value)/100;
+  intensity = Number(intensityInput.value) / 100;
 
   if(!selectedVideo){
     arrangeBalanced();
@@ -790,7 +835,9 @@ document.addEventListener("click",()=>{
 
 window.addEventListener("resize",()=>{
   if(!selectedVideo){
-    arrangeBalanced();
+    setTimeout(()=>{
+      arrangeBalanced();
+    },100);
   }
 });
 
@@ -799,7 +846,7 @@ createVideos();
 setTimeout(()=>{
   arrangeBalanced();
   startMovement();
-},100);
+},150);
 </script>
 
 </body>
