@@ -213,7 +213,9 @@ button{
   opacity:.8;
   transition:opacity .3s,border-color .3s;
   cursor:pointer;
-  transform-origin:center;
+  transform-origin:center center;
+  max-width:calc(100vw - 24px);
+  max-height:calc(100vh - 170px);
 }
 
 .video:hover{
@@ -404,38 +406,26 @@ button{
 </div>
 
 <script>
-const TOTAL = 21;
+const TOTAL=21;
 
-const world = document.getElementById("world");
-const hint = document.getElementById("hint");
-const closeBtn = document.getElementById("close");
-const selectedTitle = document.getElementById("selectedTitle");
-const loading = document.getElementById("loading");
-const statusBox = document.getElementById("status");
-const pauseBtn = document.getElementById("pauseBtn");
-const shuffleBtn = document.getElementById("shuffleBtn");
-const intensity = document.getElementById("intensity");
-const intensityValue = document.getElementById("intensityValue");
+const world=document.getElementById("world");
+const hint=document.getElementById("hint");
+const closeBtn=document.getElementById("close");
+const selectedTitle=document.getElementById("selectedTitle");
+const loading=document.getElementById("loading");
+const statusBox=document.getElementById("status");
+const pauseBtn=document.getElementById("pauseBtn");
+const shuffleBtn=document.getElementById("shuffleBtn");
+const intensity=document.getElementById("intensity");
+const intensityValue=document.getElementById("intensityValue");
 
-let videos = [];
-let selected = null;
-let chaos = true;
-let audioStarted = false;
-let intensityLevel = .7;
-let animationTimer = null;
-let hasStarted = false;
-
-const positions = [
-  [4,13],[29,8],[57,12],[78,5],[12,39],
-  [39,31],[67,36],[87,31],[1,70],[25,65],
-  [50,67],[73,64],[87,78],[7,86],[34,84],
-  [61,87],[47,3],[92,50],[18,5],[70,22],[36,48]
-];
-
-const rotations = [
-  -7,4,-3,8,-4,5,-8,3,-5,7,-2,6,-9,
-  4,-6,8,-4,5,-7,3,-5
-];
+let videos=[];
+let selected=null;
+let chaos=true;
+let audioStarted=false;
+let intensityLevel=.7;
+let animationTimer=null;
+let hasStarted=false;
 
 function random(min,max){
   return Math.random()*(max-min)+min;
@@ -454,11 +444,6 @@ function createVideos(){
     video.muted=true;
 
     video.dataset.index=i;
-    video.dataset.pan=random(-.8,.8);
-
-    video.style.left=positions[i-1][0]+"%";
-    video.style.top=positions[i-1][1]+"%";
-    video.style.transform=`rotate(${rotations[i-1]}deg) scale(${random(.75,1.15)})`;
 
     video.addEventListener("click",()=>selectVideo(video));
 
@@ -477,6 +462,10 @@ function createVideos(){
     world.appendChild(video);
     videos.push(video);
   }
+
+  requestAnimationFrame(()=>{
+    shuffle();
+  });
 }
 
 function restartChaosVideo(video){
@@ -517,6 +506,24 @@ function startChaos(){
   startMovement();
 }
 
+function getBounds(video){
+  const rect=video.getBoundingClientRect();
+
+  const padding=12;
+  const topSafe=85;
+  const bottomSafe=90;
+
+  const width=rect.width;
+  const height=rect.height;
+
+  return{
+    maxX:Math.max(padding,window.innerWidth-width-padding),
+    maxY:Math.max(topSafe,window.innerHeight-height-bottomSafe),
+    minX:padding,
+    minY:topSafe
+  };
+}
+
 function startMovement(){
   clearInterval(animationTimer);
 
@@ -524,18 +531,16 @@ function startMovement(){
     if(!chaos || selected) return;
 
     videos.forEach(video=>{
-      const rect=video.getBoundingClientRect();
-      const maxX=Math.max(0,window.innerWidth-rect.width);
-      const maxY=Math.max(70,window.innerHeight-rect.height-70);
+      const b=getBounds(video);
 
-      const x=random(0,maxX);
-      const y=random(70,maxY);
-      const r=random(-25,25);
-      const s=random(.75,1.15);
+      const x=random(b.minX,b.maxX);
+      const y=random(b.minY,b.maxY);
+
+      const rotation=random(-8,8);
 
       video.style.left=x+"px";
       video.style.top=y+"px";
-      video.style.transform=`rotate(${r}deg) scale(${s})`;
+      video.style.transform=`rotate(${rotation}deg)`;
     });
   },1400);
 }
@@ -627,13 +632,11 @@ function shuffle(){
   if(selected) return;
 
   videos.forEach(video=>{
-    const rect=video.getBoundingClientRect();
-    const maxX=Math.max(0,window.innerWidth-rect.width);
-    const maxY=Math.max(70,window.innerHeight-rect.height-70);
+    const b=getBounds(video);
 
-    video.style.left=random(0,maxX)+"px";
-    video.style.top=random(70,maxY)+"px";
-    video.style.transform=`rotate(${random(-25,25)}deg) scale(${random(.65,1.35)})`;
+    video.style.left=random(b.minX,b.maxX)+"px";
+    video.style.top=random(b.minY,b.maxY)+"px";
+    video.style.transform=`rotate(${random(-8,8)}deg)`;
   });
 }
 
@@ -663,6 +666,12 @@ document.addEventListener("keydown",e=>{
   }
 
   if(e.key.toLowerCase()==="r"){
+    shuffle();
+  }
+});
+
+window.addEventListener("resize",()=>{
+  if(!selected){
     shuffle();
   }
 });
